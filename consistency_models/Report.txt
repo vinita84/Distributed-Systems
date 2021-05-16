@@ -1,0 +1,42 @@
+ASSUMPTIONS:
+* All the consistency implementations consider only one object named 't'. It can be extended to get the object from config file or user.
+* The value assigned to this object by all processes is the global time plus 0.1 * their process id. So the decimal part shows which process reported that time value to the KV store object
+* It is assumed that all network messages are received without any exceptional delays or loss of messages.
+* The test case has been coded within the clients. I runs for 20 iterations of a pair of set and get operations.
+* The clients choose the replica randomly to query the 20 iterations. If there are multiple objects in the KV store, the replica can be chosen based on key in the extended version. In this scenario every replica will be dedicated to a particular key.
+* The sample outputs from all three consistencies are included in their folders in this project directory.
+
+PROGRAM FLOW:
+* The program starts with main_ds.py
+* All the parameters are defined in the config.ini file
+* The main_ds.py calls driver.py which starts with reading the config and starting the clients and replicas.
+
+SEQUENTIAL CONSISTENCY:
+* This has been deployed in the same way as described in the lecture.
+* The start executing their test cases in parallel. So some of the requests will be executing concurrently.
+* Every request is received in a separate thread by the replica.
+* The read requests get processed as they are received in case of sequential consistency.
+* The write requests start with acquiring a lock followed by sending a total order multicast.
+* As soon as TOM acknowledgements are received from all other replicas, the new value is written to the KV store.
+* By the end of TOM all replicas will have the updated value
+
+LINEARIZABILITY:
+* This has been deployed in the same way as described in the lecture.
+* The start executing their test cases in parallel. So some of the requests will be executing concurrently.
+* Every request is received in a separate thread by the replica.
+* The read requests get processed as they are received in case of sequential consistency.
+* Processing a read starts with acquiring a lock and then sending a total order multicast.
+* All the replicas respond with their latest value against the requested key and the corresponding timestamp.
+* When the TOM acknowledgements are received from all the replicas, the timestamps are compared and the latest value is assigned to the key in the current replica. This marks the completion of TOM for read requests.
+*  After the completion of TOM for read, the value from the KV store is returned as the response og read request.
+* The write requests start with acquiring a lock followed by sending a total order multicast.
+* As soon as TOM acknowledgements are received from all other replicas, the new value is written to the KV store.
+* By the end of TOM all replicas will have the updated value
+
+EVENTUAL:
+* This has been deployed in the same way as described in the lecture.
+* The start executing their test cases in parallel. So some of the requests will be executing concurrently.
+* Every request is received in a separate thread by the replica.
+* The read requests get processed as they are received in case of sequential consistency.
+* The current value of the key is returned.
+* The write requests are processed by writing the value received from client to the KV store.

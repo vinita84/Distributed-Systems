@@ -1,0 +1,10 @@
+1. The implementation tests the TOM by just writing messages into files and ensuring that these messages follow same order.
+2. The program starts with the driver function and forks as many number of processes as the ports supplied in the config.ini file
+3. These processed have their own port and host addresses.
+4. Each process starts with two threads:
+    a. one for listening to incoming messages
+    b. one for sending TOM or P2P messages
+5. There are 4 test inputs provided in the driver.py main().
+6. The first 3 are TOM messages and last one id P2P.
+7. All three TOM results are printed in the respective tom_outfile_portNum.txt files.
+8. The correctness of implementation can be ensured from there.
